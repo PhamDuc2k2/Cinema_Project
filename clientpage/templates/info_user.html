@@ -1,0 +1,98 @@
+{% extends 'home.html' %}
+
+{% block content %}
+<div class="w-25 mx-auto">
+    <form action="{% url 'info_user' %}" method="post">
+        {% csrf_token %}
+        <fieldset class="container">
+            <legend>Info User</legend>
+            <div class="hiding user_id">{{user.id}}</div>
+
+            <div class="form-group form-floating mb-3">
+                <input type="text" id="username" name="username" class="form-control" value="{{user.username}}">
+                <label for="username">Username</label>
+            </div>
+            <div class="form-group form-floating mb-3">
+                <input type="text" id="email" name="email" class="form-control" value="{{user.email}}">
+                <label for="email">Email</label>
+            </div>
+            <div class="mb-3 ps-0">
+                <label class="form-check-label">Do you want to receive announcement</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="receive_announcement_yes" name="receive_announcement" value="yes" {% if account.receive_announcement %}checked{% endif %} data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                    <label class="form-check-label" for="receive_announcement_yes">Yes</label>
+
+                    <form method="post" class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <select class="modal-body" id="list_category" multiple>
+                                
+                            </select>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                              <button type="submit" class="btn btn-primary" onclick="updateAccount()">Accept</button>
+                            </div>
+                          </div>
+                        </div>
+                      </form>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="receive_announcement_no" name="receive_announcement" value="no" {% if not account.receive_announcement %}checked{% endif %}>
+                    <label class="form-check-label" for="receive_announcement_no">No</label>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-dark">Submit</button>
+    </form>
+    </fieldset>
+</div>
+<script>
+    let listCategory = document.getElementById('list_category')
+    let categoryUrl = 'http://localhost:8000/api/movie/category-view'
+
+    data = fetch(categoryUrl)
+        .then(response => response.json())
+        .then(category => {
+            for (item of category) {
+                let option_item = document.createElement('option')
+                option_item.innerHTML = `${item.name}`
+                option_item.value = `${item.id}`
+                listCategory.appendChild(option_item)
+            }
+    })
+
+    // function updateAccount() {
+        //     const selectedCategories = Array.from(document.getElementById('list_category').selectedOptions).map(option => option.value);
+        //     const jsonData = JSON.stringify({ interested_categories: selectedCategories });
+
+        //     const userId = document.querySelector('.user_id'); 
+        //     console.log(userId); // Replace with the actual user ID
+
+        //     fetch(`/api/accounts/${userId}/`, {
+        //         method: 'PUT',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: jsonData,
+        //     })
+        //     .then(response => {
+        //         if (response.ok) {
+        //             console.log('Account updated successfully');
+        //             // Close the modal if needed
+        //             const modal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
+        //             modal.hide();
+        //         } else {
+        //             console.error(`Failed to update account. Status: ${response.status}`);
+        //         }
+        //     })
+        //     .catch(error => {
+        //         console.error('Error updating account:', error);
+        //     });
+        // }
+
+</script>
+{% endblock %}
